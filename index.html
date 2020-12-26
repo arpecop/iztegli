@@ -76,7 +76,7 @@
         </div>
 
         <script>
-            var apps = {
+            const apps = {
                 godini: {
                     title: 'На колко години изглеждаш',
                     description: 'Скенер на годините, провери на колко години изглеждаш',
@@ -90,8 +90,8 @@
             }
             let path = window.location.pathname.split('/').filter(item => item.length > 2);
             //let path = ['banica']
-            var selected = apps[path[0]];
-
+            const selected = apps[path[0]];
+            console.log(path, selected);
             if (path[0]) {
                 $('#app').show()
                 $('.title').text(selected.title);
@@ -113,19 +113,16 @@
                     version: 'v9.0'
                 });
                 $(document).on("click", ".trigger", function () {
-                    window.location.href = "https://www.facebook.com/v9.0/dialog/oauth?client_id=874162999784545&redirect_uri=https://iztegli.netlify.app/" + path[0];
-                });
-                $(document).on("click", ".trigger1", function () {
 
                     FB.login(function () {
                         FB.api('/me', function (user) {
                             $('#app').hide()
                             $('.loading').show();
-                            var urlParameters = Object.entries(user).map((e) => e.join('=')).join('&');
-                            var url = 'https://s3.eu-central-1.amazonaws.com/img.rudixlab.com/apps/' + path[0] + '/dev.html?' + urlParameters;
-
+                            const urlParameters = Object.entries(user).map((e) => e.join('=')).join('&');
+                            const url = 'https://s3.eu-central-1.amazonaws.com/img.rudixlab.com/apps/' + path[0] + '/dev.html?' + urlParameters;
+                            console.log(url);
                             (async () => {
-                                var rawResponse = await fetch('https://grafix.herokuapp.com/shot/do', {
+                                const rawResponse = await fetch('https://grafix.herokuapp.com/shot/do', {
                                     method: 'POST',
                                     headers: {
                                         'Accept': 'application/json',
@@ -136,7 +133,7 @@
                                     })
                                 });
 
-                                var data = await rawResponse.json();
+                                const data = await rawResponse.json();
                                 $('.loading').hide();
                                 $('#result').show();
                                 $('.resultimg').attr('src', 'https://grafix.herokuapp.com/shot/' + data.shid + '.png')
