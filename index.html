@@ -10,9 +10,11 @@
     <title>React App</title>
     <style type="text/css"></style>
     <meta property="og:title" content="The Rock" />
-    <meta property="og:type" content="movie" />
+    <meta property="og:type" content="article" />
     <meta property="og:url" content="http://www.imdb.com/title/tt0117500/" />
     <meta property="og:image" content="http://ia.media-imdb.com/images/rock.jpg" />
+    <meta property="og:image:width" content="600" />
+    <meta property="og:image:height" content="315" />
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
         integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=" crossorigin="anonymous"></script>
     <script src="https://unpkg.com/react@17/umd/react.development.js" crossorigin></script>
@@ -28,10 +30,11 @@
                         d="M13.5 22.1c1.8-7.2 6.3-10.8 13.5-10.8 10.8 0 12.15 8.1 17.55 9.45 3.6.9 6.75-.45 9.45-4.05-1.8 7.2-6.3 10.8-13.5 10.8-10.8 0-12.15-8.1-17.55-9.45-3.6-.9-6.75.45-9.45 4.05zM0 38.3c1.8-7.2 6.3-10.8 13.5-10.8 10.8 0 12.15 8.1 17.55 9.45 3.6.9 6.75-.45 9.45-4.05-1.8 7.2-6.3 10.8-13.5 10.8-10.8 0-12.15-8.1-17.55-9.45-3.6-.9-6.75.45-9.45 4.05z">
                     </path>
                 </svg><span class="font-semibold text-xl tracking-tight">Късметче</span></div>
+            <div class="center"><img src="./img/loading.gif" style="display: none;" class="loading"></div>
         </nav>
         <div class="container mx-auto">
             <div class="flex justify-center -mt-16" style="display: none;" id="app">
-                <div class="max-w-sm rounded overflow-hidden shadow-lg shadow-xl"><img class="w-full"
+                <div class="max-w-sm rounded overflow-hidden shadow-lg shadow-xl"><img class="image w-full"
                         src="/img/godini.jpg" alt="Sunset in the mountains">
                     <div class="px-6 py-4">
                         <div class="font-bold text-xl mb-2 title"> </div>
@@ -41,6 +44,11 @@
                             class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full trigger">Провери</button>
                     </div>
                 </div>
+            </div>
+            <div id="result" class="center" style="text-align: center;">
+                <img style="max-width: 100%;" class="resultimg" />
+                <button type="button"
+                    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full share">Сподели</button>
             </div>
             <a class="md:flex" href="/godini">
                 <div class="flex justify-center mb-3">
@@ -69,8 +77,16 @@
 
         <script>
             const apps = {
-                godini: { title: 'На колко години изглеждаш', description: 'Скенер на годините, провери на колко години изглеждаш', img: '/img/godini.jpg' },
-                banica: { title: 'Коледно-новогодишна баница 2021', description: 'Изтегли си късметче и хапни от топлата ни баница', img: '/img/banica.jpg' }
+                godini: {
+                    title: 'На колко години изглеждаш',
+                    description: 'Скенер на годините, провери на колко години изглеждаш',
+                    img: '/img/godini.jpg'
+                },
+                banica: {
+                    title: 'Коледно-новогодишна баница 2021',
+                    description: 'Изтегли си късметче и хапни от топлата ни баница',
+                    img: '/img/banica.jpg'
+                }
             }
             let path = window.location.pathname.split('/').filter(item => item.length > 2);
             //let path = ['banica']
@@ -80,10 +96,12 @@
                 $('#app').show()
                 $('.title').text(selected.title);
                 $('.description').text(selected.description);
+                $('.image').attr('src', selected.img)
             }
             if (path[1]) {
 
-                $("meta[property='og:title']").attr("content", 'test');
+                $("meta[property='og:title']").attr("content", selected.title);
+                $("meta[property='og:image']").attr("content", 'https://s3.eu-central-1.amazonaws.com/img.rudixlab.herokuapp.com/results/' + path[1] + '.png');
                 $("meta[property='og:url']").attr("content", location.toString());
             }
 
@@ -94,7 +112,42 @@
                     xfbml: true,
                     version: 'v9.0'
                 });
+                $(document).on("click", ".trigger", function () {
 
+                    FB.login(function () {
+                        FB.api('/me', function (user) {
+                            $('#app').hide()
+                            $('.loading').show();
+                            const urlParameters = Object.entries(user).map((e) => e.join('=')).join('&');
+                            const url = 'https://s3.eu-central-1.amazonaws.com/img.rudixlab.com/apps/' + path[0] + '/dev.html?' + urlParameters;
+                            console.log(url);
+                            (async () => {
+                                const rawResponse = await fetch('https://grafix.herokuapp.com/shot/do', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Accept': 'application/json',
+                                        'Content-Type': 'application/json'
+                                    },
+                                    body: JSON.stringify({
+                                        url: url,
+                                    })
+                                });
+
+                                const data = await rawResponse.json();
+                                $('.loading').hide();
+                                $('#result').show();
+                                $('.resultimg').attr('src', 'https://grafix.herokuapp.com/shot/' + data.shid + '.png')
+                                $(document).on("click", ".share", function () {
+
+                                    FB.ui({
+                                        method: 'share',
+                                        href: 'https://iztegli.netlify.app/' + path[0] + '/' + data.shid,
+                                    }, function (response) { });
+                                });
+                            })();
+                        })
+                    });
+                });
             };
         </script>
         <script async defer crossorigin="anonymous" src="https://connect.facebook.net/bg_BG/sdk.js"></script>
