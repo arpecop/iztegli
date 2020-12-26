@@ -68,7 +68,7 @@
         </div>
 
         <script>
-            const path = window.location.pathname.split('/');
+            const path = window.location.pathname.split('/').filter(item => item.lenght > 2);
             console.log(path);
             const apps = [
                 { title: 'На колко години изглеждаш', description: 'Скенер на годините, провери на колко години изглеждаш', img: '/img/godini.jpg' },
