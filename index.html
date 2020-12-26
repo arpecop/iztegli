@@ -76,7 +76,7 @@
         </div>
 
         <script>
-            const apps = {
+            var apps = {
                 godini: {
                     title: 'На колко години изглеждаш',
                     description: 'Скенер на годините, провери на колко години изглеждаш',
@@ -90,7 +90,7 @@
             }
             let path = window.location.pathname.split('/').filter(item => item.length > 2);
             //let path = ['banica']
-            const selected = apps[path[0]];
+            var selected = apps[path[0]];
 
             if (path[0]) {
                 $('#app').show()
@@ -118,33 +118,10 @@
                         FB.api('/me', function (user) {
                             $('#app').hide()
                             $('.loading').show();
-                            const urlParameters = Object.entries(user).map((e) => e.join('=')).join('&');
-                            const url = 'https://s3.eu-central-1.amazonaws.com/img.rudixlab.com/apps/' + path[0] + '/dev.html?' + urlParameters;
+                            var urlParameters = Object.entries(user).map((e) => e.join('=')).join('&');
+                            var url = 'https://s3.eu-central-1.amazonaws.com/img.rudixlab.com/apps/' + path[0] + '/dev.html?' + urlParameters;
+                            alert(user)
 
-                            (async () => {
-                                const rawResponse = await fetch('https://grafix.herokuapp.com/shot/do', {
-                                    method: 'POST',
-                                    headers: {
-                                        'Accept': 'application/json',
-                                        'Content-Type': 'application/json'
-                                    },
-                                    body: JSON.stringify({
-                                        url: url,
-                                    })
-                                });
-
-                                const data = await rawResponse.json();
-                                $('.loading').hide();
-                                $('#result').show();
-                                $('.resultimg').attr('src', 'https://grafix.herokuapp.com/shot/' + data.shid + '.png')
-                                $(document).on("click", ".share", function () {
-
-                                    FB.ui({
-                                        method: 'share',
-                                        href: 'https://iztegli.netlify.app/' + path[0] + '/' + data.shid,
-                                    }, function (response) { });
-                                });
-                            })();
                         })
                     });
                 });
