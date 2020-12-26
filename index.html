@@ -30,15 +30,15 @@
                 </svg><span class="font-semibold text-xl tracking-tight">Късметче</span></div>
         </nav>
         <div class="container mx-auto">
-            <div class="flex justify-center -mt-16">
+            <div class="flex justify-center -mt-16" style="display: none;" id="app">
                 <div class="max-w-sm rounded overflow-hidden shadow-lg shadow-xl"><img class="w-full"
                         src="/img/godini.jpg" alt="Sunset in the mountains">
                     <div class="px-6 py-4">
-                        <div class="font-bold text-xl mb-2">На колко години изглеждаш</div>
-                        <p class="text-gray-700 text-base">Скенер на годините, провери на колко години изглеждаш</p>
+                        <div class="font-bold text-xl mb-2 title"> </div>
+                        <p class="text-gray-700 text-base description"> </p>
                     </div>
                     <div class="px-6 pt-4 pb-2"><button type="button"
-                            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">Провери</button>
+                            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full trigger">Провери</button>
                     </div>
                 </div>
             </div>
@@ -72,9 +72,15 @@
                 godini: { title: 'На колко години изглеждаш', description: 'Скенер на годините, провери на колко години изглеждаш', img: '/img/godini.jpg' },
                 banica: { title: 'Коледно-новогодишна баница 2021', description: 'Изтегли си късметче и хапни от топлата ни баница', img: '/img/banica.jpg' }
             }
-            const path = window.location.pathname.split('/').filter(item => item.length > 2);
+            let path = window.location.pathname.split('/').filter(item => item.length > 2);
+            //let path = ['banica']
             const selected = apps[path[0]];
             console.log(path, selected);
+            if (path[0]) {
+                $('#app').show()
+                $('.title').text(selected.title);
+                $('.description').text(selected.description);
+            }
             if (path[1]) {
 
                 $("meta[property='og:title']").attr("content", 'test');
