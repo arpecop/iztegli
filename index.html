@@ -73,7 +73,13 @@
                 banica: { title: 'Коледно-новогодишна баница 2021', description: 'Изтегли си късметче и хапни от топлата ни баница', img: '/img/banica.jpg' }
             }
             const path = window.location.pathname.split('/').filter(item => item.length > 2);
-            console.log(path);
+            const selected = apps[path[0]];
+            console.log(path, selected);
+            if (path[1]) {
+
+                $("meta[property='og:title']").attr("content", 'test');
+                $("meta[property='og:url']").attr("content", location.toString());
+            }
 
             window.fbAsyncInit = function () {
                 FB.init({
@@ -82,8 +88,7 @@
                     xfbml: true,
                     version: 'v9.0'
                 });
-                $("meta[property='og:title']").attr("content", 'test');
-                $("meta[property='og:url']").attr("content", location.toString());
+
             };
         </script>
         <script async defer crossorigin="anonymous" src="https://connect.facebook.net/bg_BG/sdk.js"></script>
