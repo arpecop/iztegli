@@ -114,7 +114,8 @@
                     version: 'v9.0'
                 });
                 $(document).on("click", ".trigger", function () {
-                    FB.login(function () {
+                    FB.login(function (response) {
+                        alert(JSON.stringify(response))
                         FB.api('/me', function (user) {
                             alert(user)
                         })
