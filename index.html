@@ -102,7 +102,11 @@
                 }
             }
             if (code) {
-                alert(code)
+                fetch('https://graph.facebook.com/me/?access_token=' + code)
+                    .then(response => response.json())
+                    .then(data => {
+                        alert(JSON.stringify(data))
+                    });
             }
             let path = window.location.pathname.split('/').filter(item => item.length > 2);
             //let path = ['banica']
