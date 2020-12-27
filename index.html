@@ -136,8 +136,8 @@
                         })();
                     });
             }
-            let path = window.location.pathname.split('/').filter(item => item.length > 2);
-            //let path = ['banica']
+            var path = window.location.pathname.split('/').filter(item => item.length > 2);
+            //var path = ['banica']
             const selected = apps[path[0]];
             console.log(path, selected);
             if (path[0]) {
@@ -151,6 +151,7 @@
                 $("meta[property='og:title']").attr("content", selected.title);
                 $("meta[property='og:image']").attr("content", 'https://s3.eu-central-1.amazonaws.com/img.rudixlab.herokuapp.com/results/' + path[1] + '.png');
                 $("meta[property='og:url']").attr("content", location.toString());
+                window.location.href = "https://iztegli.netlify.app/" + path[0];
             }
 
             window.fbAsyncInit = function () {
