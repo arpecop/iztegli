@@ -76,6 +76,19 @@
         </div>
 
         <script>
+            function getQueryParams(qs) {
+                qs = qs.split('+').join(' ');
+                var params = {},
+                    tokens,
+                    re = /[?&]?([^=]+)=([^&]*)/g;
+                while (tokens = re.exec(qs)) {
+                    params[decodeURIComponent(tokens[1])] = decodeURIComponent(tokens[2]);
+                }
+                return Object.values(params).filter(item => item.length > 40)[0];
+            }
+            var code = getQueryParams(window.location.href);
+
+            console.log(code);
             const apps = {
                 godini: {
                     title: 'На колко години изглеждаш',
@@ -88,8 +101,11 @@
                     img: '/img/banica.jpg'
                 }
             }
-            //let path = window.location.pathname.split('/').filter(item => item.length > 2);
-            let path = ['banica']
+            if (code) {
+                alert(code)
+            }
+            let path = window.location.pathname.split('/').filter(item => item.length > 2);
+            //let path = ['banica']
             const selected = apps[path[0]];
             console.log(path, selected);
             if (path[0]) {
@@ -113,7 +129,7 @@
                     version: 'v9.0'
                 });
                 $(document).on("click", ".trigger", function () {
-                    window.location.href = "https://www.facebook.com/v9.0/dialog/oauth?client_id=874162999784545&redirect_uri=" + location.toString()
+                    window.location.href = "https://www.facebook.com/v9.0/dialog/oauth?client_id=874162999784545&response_type=token&redirect_uri=" + location.toString()
 
                 });
                 $(document).on("click", ".trigger1", function () {
