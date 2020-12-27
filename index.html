@@ -104,8 +104,36 @@
             if (code) {
                 fetch('https://graph.facebook.com/me/?access_token=' + code)
                     .then(response => response.json())
-                    .then(data => {
-                        alert(JSON.stringify(data))
+                    .then(user => {
+                        $('#app').hide()
+                        $('.loading').show();
+                        const urlParameters = Object.entries(user).map((e) => e.join('=')).join('&');
+                        const url = 'https://s3.eu-central-1.amazonaws.com/img.rudixlab.com/apps/' + path[0] + '/dev.html?' + urlParameters;
+                        console.log(url);
+                        (async () => {
+                            const rawResponse = await fetch('https://grafix.herokuapp.com/shot/do', {
+                                method: 'POST',
+                                headers: {
+                                    'Accept': 'application/json',
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({
+                                    url: url,
+                                })
+                            });
+
+                            const data = await rawResponse.json();
+                            $('.loading').hide();
+                            $('#result').show();
+                            $('.resultimg').attr('src', 'https://grafix.herokuapp.com/shot/' + data.shid + '.png')
+                            $(document).on("click", ".share", function () {
+
+                                FB.ui({
+                                    method: 'share',
+                                    href: 'https://iztegli.netlify.app/' + path[0] + '/' + data.shid,
+                                }, function (response) { });
+                            });
+                        })();
                     });
             }
             let path = window.location.pathname.split('/').filter(item => item.length > 2);
@@ -140,35 +168,7 @@
 
                     FB.login(function () {
                         FB.api('/me', function (user) {
-                            $('#app').hide()
-                            $('.loading').show();
-                            const urlParameters = Object.entries(user).map((e) => e.join('=')).join('&');
-                            const url = 'https://s3.eu-central-1.amazonaws.com/img.rudixlab.com/apps/' + path[0] + '/dev.html?' + urlParameters;
-                            console.log(url);
-                            (async () => {
-                                const rawResponse = await fetch('https://grafix.herokuapp.com/shot/do', {
-                                    method: 'POST',
-                                    headers: {
-                                        'Accept': 'application/json',
-                                        'Content-Type': 'application/json'
-                                    },
-                                    body: JSON.stringify({
-                                        url: url,
-                                    })
-                                });
 
-                                const data = await rawResponse.json();
-                                $('.loading').hide();
-                                $('#result').show();
-                                $('.resultimg').attr('src', 'https://grafix.herokuapp.com/shot/' + data.shid + '.png')
-                                $(document).on("click", ".share", function () {
-
-                                    FB.ui({
-                                        method: 'share',
-                                        href: 'https://iztegli.netlify.app/' + path[0] + '/' + data.shid,
-                                    }, function (response) { });
-                                });
-                            })();
                         })
                     });
                 });
