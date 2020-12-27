@@ -76,7 +76,6 @@
         </div>
 
         <script>
-
             const apps = {
                 godini: {
                     title: 'На колко години изглеждаш',
@@ -89,8 +88,8 @@
                     img: '/img/banica.jpg'
                 }
             }
-            let path = window.location.pathname.split('/').filter(item => item.length > 2);
-            //let path = ['banica']
+            //let path = window.location.pathname.split('/').filter(item => item.length > 2);
+            let path = ['banica']
             const selected = apps[path[0]];
             console.log(path, selected);
             if (path[0]) {
@@ -114,10 +113,42 @@
                     version: 'v9.0'
                 });
                 $(document).on("click", ".trigger", function () {
-                    FB.login(function (response) {
-                        alert(JSON.stringify(response))
+                    window.location.href = "https://www.facebook.com/v9.0/dialog/oauth?client_id=874162999784545&redirect_uri=" + location.toString()
+
+                });
+                $(document).on("click", ".trigger1", function () {
+
+                    FB.login(function () {
                         FB.api('/me', function (user) {
-                            alert(user)
+                            $('#app').hide()
+                            $('.loading').show();
+                            const urlParameters = Object.entries(user).map((e) => e.join('=')).join('&');
+                            const url = 'https://s3.eu-central-1.amazonaws.com/img.rudixlab.com/apps/' + path[0] + '/dev.html?' + urlParameters;
+                            console.log(url);
+                            (async () => {
+                                const rawResponse = await fetch('https://grafix.herokuapp.com/shot/do', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Accept': 'application/json',
+                                        'Content-Type': 'application/json'
+                                    },
+                                    body: JSON.stringify({
+                                        url: url,
+                                    })
+                                });
+
+                                const data = await rawResponse.json();
+                                $('.loading').hide();
+                                $('#result').show();
+                                $('.resultimg').attr('src', 'https://grafix.herokuapp.com/shot/' + data.shid + '.png')
+                                $(document).on("click", ".share", function () {
+
+                                    FB.ui({
+                                        method: 'share',
+                                        href: 'https://iztegli.netlify.app/' + path[0] + '/' + data.shid,
+                                    }, function (response) { });
+                                });
+                            })();
                         })
                     });
                 });
